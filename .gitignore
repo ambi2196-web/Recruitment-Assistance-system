@@ -1,0 +1,29 @@
+# Secrets: real keys live only in the hosting provider's settings (G7)
+.env
+.env.*
+!.env.example
+
+# Local data must never reach git (G7)
+.data/
+data/
+local-data/
+*.dump
+*.sql.gz
+
+# Golden set may derive from real requirements (section 13)
+eval/golden/
+eval/reports/
+
+# Installers that happen to sit in this folder
+*.exe
+
+# Build output and dependencies
+node_modules/
+.next/
+out/
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/

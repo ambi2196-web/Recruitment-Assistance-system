@@ -1,0 +1,18 @@
+Daniel Marsh
+d.marsh@example.com | +1 (832) 555-0163 | Houston, TX
+
+Summary
+Network engineer with 15 years of experience in network security.
+
+Experience
+Network Security Engineer, Lantern Peak Systems, Mar 2019 - Present
+- Ran 802.1X rollout across three sites.
+
+Network Engineer, Ferris Hill Networks, Jun 2017 - Aug 2020
+- Managed RADIUS servers and switch port security.
+
+Network Administrator, Osprey Lane IT, Jan 2015 - May 2017
+- Supported campus switches and firewalls.
+
+Skills
+802.1X, RADIUS, Cisco Clean Access, switch port security

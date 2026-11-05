@@ -1,0 +1,6 @@
+Subject: Data Engineer req
+
+tarnbrook need data engineer
+python, sql, spark, snowflake, airflow, aws
+7+ yrs
+remote ok?

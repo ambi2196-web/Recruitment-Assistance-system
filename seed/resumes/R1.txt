@@ -1,0 +1,18 @@
+Priya Venkataraman
+priya.v@example.com | +1 (602) 555-0119 | Phoenix, AZ
+
+Summary
+Data engineer with 8 years of experience building cloud data platforms.
+
+Experience
+Senior Data Engineer, Brightwell Analytics, Jan 2021 - Present
+- Built Airflow pipelines that load operational data into Snowflake.
+- Rewrote Spark batch jobs in Python, which cut nightly run time by 40%.
+- Chose Snowflake over a self-managed warehouse after comparing cost and support needs.
+
+Data Engineer, Cobalt Ridge Software, Feb 2017 - Dec 2020
+- Developed SQL models and AWS Glue jobs for reporting.
+- Moved on-premises ETL jobs to AWS.
+
+Skills
+Python, SQL, Spark, Snowflake, Airflow, AWS

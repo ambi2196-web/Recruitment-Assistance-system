@@ -1,0 +1,16 @@
+{
+  "_note": "All names, emails and phone numbers here are fictional.",
+  "clients": [
+    { "code": "CLIENT-01", "name": "Halvorsen Energy Services", "aliases": ["Halvorsen", "HES"], "industryLabel": "energy services" },
+    { "code": "CLIENT-02", "name": "Redcliff Midstream Partners", "aliases": ["Redcliff", "RMP"], "industryLabel": "midstream energy" },
+    { "code": "CLIENT-03", "name": "Tarnbrook Mining Group", "aliases": ["Tarnbrook", "TMG"], "industryLabel": "mining" }
+  ],
+  "prospectTerms": ["Project Larkspur", "Quillon Resources RFP"],
+  "users": [
+    { "name": "Stakeholder One", "email": "stakeholder1@example.com", "role": "stakeholder" },
+    { "name": "Stakeholder Two", "email": "stakeholder2@example.com", "role": "stakeholder" },
+    { "name": "Recruiter One", "email": "recruiter1@example.com", "role": "recruiter" },
+    { "name": "Recruiter Two", "email": "recruiter2@example.com", "role": "recruiter" },
+    { "name": "Admin", "email": "admin@example.com", "role": "admin" }
+  ]
+}
