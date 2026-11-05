@@ -2,7 +2,7 @@
 
 An internal tool for a US IT contract-staffing team. AI drafts; humans decide. See `REQUIREMENTS.md` for the product and `DEPLOYMENT_PLAN.md` for the rollout.
 
-**Status:** Phase 1 (requirement check and brief). Data is synthetic. The AI is a mock with canned answers, so it shows the workflow, not real AI quality.
+**Status:** Phase 2 (screening kit and submission quality). Data is synthetic. The AI is a mock with canned answers, so it shows the workflow, not real AI quality.
 
 ## Run it on your computer
 
@@ -40,7 +40,10 @@ Stop the app before running `db:setup` again, because the local database allows 
 2. Click **Switch user** and choose **Stakeholder One**. Open the requirement and click **SEND** to get copy-ready text.
 3. Paste a client answer, such as "We need a technical ontologist to make our data machine-readable."
 4. Switch to **Recruiter One** and open the requirement. You will see brief v2 with "What changed".
-5. Switch to **Admin** to see every AI call and its redacted input. **Client registry** is linked from there.
+5. From the brief, open **Screening kit**, then **Add a candidate**. Paste a resume from `seed/resumes/` and its notes from `seed/call-notes/`. R3 shows the hidden instruction flag.
+6. Mark every flag with a note, then approve. You will get Conrep-ready text.
+7. Switch to **Stakeholder One** and open the submission to forward or reject it. The recruiter then sees the outcome.
+8. Switch to **Admin** to see every AI call and its redacted input. **Client registry** is linked from there.
 
 ## Check it
 

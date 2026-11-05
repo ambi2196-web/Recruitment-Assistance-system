@@ -1,5 +1,35 @@
 # Changelog
 
+## Phase 2 — Screening kit and submission quality (5 November 2026, built on the mock AI)
+
+Started before Phases 0 and 1 had fully passed, on the owner's instruction.
+
+### Added
+- Agent A3 screening kit, printable, with code checks for 5 questions and at least 2 on lived experience (M5).
+- Deterministic checks for dates, gaps, claimed years, phone code, time zone, must-haves, instruction-like text, hidden text and near-duplicates (FR-6.2).
+- `redactCandidateText`: masks the candidate's identity, then applies full redaction, to both resumes and call notes.
+- Agent A4 submission drafter with no tools. Code rejects verdict wording such as "best match" (G3, G4).
+- Recruiter checkpoint, stakeholder decision, plain-English rejection reasons and Conrep-ready text (M7, M8).
+- Synthetic call notes in `seed/call-notes/`.
+
+### Fixed
+- Failed forms no longer clear what was typed. A redaction stop used to wipe a pasted email.
+- An email address could survive name masking as `[CANDIDATE]@example.com`. Emails are now removed first, and the self-check looks for leftover domains.
+
+### Decisions
+- Added a `submission_actions` table for who approved, forwarded or rejected (G5).
+- Added `model` and `prompt_version` to `screening_kits` (G6).
+- Claimed years are flagged only when overclaimed by more than 1 year. A resume that understates is not flagged.
+- Conrep text leaves out rates, and includes the real client name because Conrep is internal.
+
+### Known to be weak
+- **Drafts and kits are mock text.** Evidence comes from a simple word match, so "missing" there can disagree with the code flags. Only the deterministic checks are proven.
+- **A3 and A4 have not faced a real model.** Prompt-injection resistance in particular needs testing against one. Today's defence is delimiters, no tools, code flags and verdict rejection.
+- Deterministic parsing expects common resume layouts. Unusual date or heading styles may produce extra or missing flags.
+- The verdict filter can over-block harmless wording, such as "feature ranking pipeline". That draft would fail with an error.
+- Hidden-text detection covers plain text only. Real white-on-white text needs the PDF and DOCX parsing in Phase 4.
+- The original resume is not stored, so a stakeholder sees only the summary, evidence and flags.
+
 ## Phase 1 — Requirement check and brief (5 November 2026, built on the mock AI)
 
 Started before Phase 0's deployed-link check passed, on the owner's instruction.

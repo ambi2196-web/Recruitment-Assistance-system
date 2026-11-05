@@ -105,7 +105,7 @@ function clientTerms(registry: Registry): { term: string; code: string }[] {
 }
 
 const stripTokens = (text: string) =>
-  text.replace(/\[(?:RATE|EMAIL|PHONE|PROSPECT)\]/g, " ").replace(/\bCLIENT-\d+\b/g, " ");
+  text.replace(/\[(?:RATE|EMAIL|PHONE|PROSPECT|CANDIDATE|LINK)\]/g, " ").replace(/\bCLIENT-\d+\b/g, " ");
 
 const compact = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 
@@ -137,10 +137,45 @@ export function selfCheck(text: string, registry: Registry): string | null {
 
   if (RATE_PATTERNS.some((p) => new RegExp(p).test(stripped))) return "A rate or money amount is still in the text.";
   if (new RegExp(LEFTOVER_MONEY).test(stripped)) return "A number near a rate or money word could not be redacted.";
-  if (new RegExp(EMAIL).test(stripped)) return "An email address is still in the text.";
+  // The second test catches a domain left behind after part of an address was replaced.
+  if (new RegExp(EMAIL).test(stripped) || /@[\p{L}\p{N}-]+\.\p{L}/u.test(stripped)) return "An email address is still in the text.";
   if ([...stripped.matchAll(PHONE)].some((m) => countDigits(m[0]) >= 10)) return "A phone number is still in the text.";
 
   return null;
+}
+
+const PROFILE_LINK = /\b(?:https?:\/\/|www\.)\S+|\b(?:linkedin\.com|github\.com)\/\S+/gi;
+// Two to four capitalised words alone on a line, as at the top of most resumes.
+const NAME_LINE = /^\p{Lu}[\p{L}'’-]*(?:\s+\p{Lu}[\p{L}'’.-]*){1,3}$/u;
+
+function nameParts(name: string): string[] {
+  return name.split(/\s+/).filter((part) => part.replace(/\W/g, "").length >= 3);
+}
+
+/**
+ * Masks a candidate's identity, then redacts as usual (FR-6.3). Resumes and call
+ * notes may also hold client names and rates, so they get the full treatment.
+ */
+export function redactCandidateText(input: string, candidateName: string, registry: Registry): RedactionResult {
+  const firstLine = normalise(input).split(/\r?\n/).map((line) => line.trim()).find(Boolean) ?? "";
+  // The name typed by the recruiter may differ from the resume, so use both.
+  const names = [candidateName, ...(NAME_LINE.test(firstLine) ? [firstLine] : [])];
+  const parts = [...new Set(names.flatMap(nameParts))].sort(byLongestFirst);
+
+  // Emails go first. Masking a name inside one would stop it looking like an email.
+  let text = normalise(input).replace(EMAIL, "[EMAIL]").replace(PROFILE_LINK, "[LINK]");
+  for (const name of [...names, ...parts].sort(byLongestFirst)) {
+    text = text.replace(termPattern(name), "[CANDIDATE]");
+  }
+
+  const result = redact(text, registry);
+  if (!result.ok) return result;
+
+  const stripped = result.text.replaceAll("[CANDIDATE]", " ");
+  if (parts.some((part) => termPattern(part).test(stripped))) {
+    return { ok: false, reason: "The candidate's name is still in the text." };
+  }
+  return result;
 }
 
 export function redact(input: string, registry: Registry): RedactionResult {

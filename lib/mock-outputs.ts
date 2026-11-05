@@ -189,6 +189,42 @@ const dataBrief = {
   open_questions: [dataCheck.client_questions[0]],
 };
 
+const mockKit = {
+  questions: [
+    { question: "Tell me about a design decision you made on your last project, and why.", good_answer_signals: ["Names the options considered"], red_flags: ["Cannot say who decided"], follow_up: "What would you change now?" },
+    { question: "Describe a time something you built failed in production.", good_answer_signals: ["Gives a specific incident"], red_flags: ["Says nothing ever failed"], follow_up: "How did you find the cause?" },
+    { question: "Walk me through the architecture of your most recent project.", good_answer_signals: ["Draws clear links between parts"], red_flags: ["Repeats the resume"], follow_up: "Which part did you own?" },
+    { question: "Which tools from this role have you used in the last year?", good_answer_signals: ["Gives versions or details"], red_flags: ["Only lists names"], follow_up: "What annoyed you about it?" },
+    { question: "How do you test your work before it reaches users?", good_answer_signals: ["Describes real steps"], red_flags: ["No clear process"], follow_up: "Give a recent example." },
+  ],
+  identity_checks: ["Keep the camera on for the full call", "Ask about a specific past project detail", "Confirm current city and time zone"],
+};
+
+// Sorts must-haves by where their words appear, so flags and evidence stay in step.
+function mockDraft(input: string) {
+  const block = (name: string) => input.match(new RegExp(String.raw`<<<${name}\n([\s\S]*?)\n>>>`))?.[1] ?? "";
+  const resume = block("RESUME").toLowerCase();
+  const notes = block("CALL_NOTES").toLowerCase();
+  const brief = JSON.parse(block("BRIEF") || "{}") as { must_haves?: string[] };
+
+  return {
+    summary_5_lines: [
+      "[CANDIDATE] has worked in roles related to this requirement.",
+      "The resume lists recent experience with some of the tools named.",
+      "The call notes add detail on recent project work.",
+      "This is a mock summary. No real model was used.",
+      "Check the evidence table before you submit.",
+    ],
+    evidence_per_must_have: (brief.must_haves ?? []).map((mustHave) => {
+      const word = mustHave.toLowerCase();
+      const source = resume.includes(word) ? "resume" : notes.includes(word) ? "call" : "missing";
+      return { must_have: mustHave, evidence: source === "missing" ? "No evidence found." : "Mentioned directly.", source };
+    }),
+    model_flags: [] as { type: string; detail: string }[],
+    questions_to_clarify_with_candidate: ["Please confirm your current location and time zone."],
+  };
+}
+
 export function mockOutput(agent: string, input: string): unknown {
   const isOntology = /ontolog/i.test(input);
   const isNetwork = /network access control/i.test(input);
@@ -199,6 +235,10 @@ export function mockOutput(agent: string, input: string): unknown {
     case "a2_recruiter_brief":
       if (isOntology) return ontologyBrief(input.includes("<<<CLIENT_ANSWER"));
       return isNetwork ? networkBrief : dataBrief;
+    case "a3_screening_kit":
+      return mockKit;
+    case "a4_submission_drafter":
+      return mockDraft(input);
     default:
       return { status: "ok", characters_received: input.length };
   }

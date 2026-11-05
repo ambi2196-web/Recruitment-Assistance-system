@@ -5,16 +5,21 @@ import { requireRole } from "@/lib/session";
 import { ActionForm, SubmitButton } from "../action-form";
 import { intake } from "../requirement-actions";
 import { RequirementList } from "../requirement-list";
+import { SubmissionList } from "../submission-parts";
+import { listSubmissions } from "@/lib/submissions";
 
 export default async function RecruiterInbox() {
   const user = await requireRole("recruiter");
   const clientOptions = await getDb().select({ id: clients.id, name: clients.name }).from(clients).orderBy(asc(clients.name));
+  const mine = await listSubmissions(getDb(), { recruiterId: user.id });
 
   return (
     <div className="two-columns">
       <section>
         <h1>Recruiter inbox</h1>
         <RequirementList recruiterId={user.id} basePath="/recruiter" />
+        <h2>My submissions</h2>
+        <SubmissionList rows={mine} basePath="/recruiter/submissions" />
       </section>
       <section className="card">
         <h2>Forward a client email</h2>

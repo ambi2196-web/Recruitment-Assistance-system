@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { RecruiterBrief } from "@/lib/agents/a2_recruiter_brief";
 import type { ChangeSection } from "@/lib/brief-diff";
@@ -42,9 +43,13 @@ export default async function RecruiterRequirement({ params }: { params: Promise
     <div className="brief">
       <div className="brief-head">
         <h1>{requirement.title} <span className="muted">Brief v{brief.version}</span></h1>
-        <form action={toggleHindi}>
-          <button type="submit">Hindi: {user.hindiToggle ? "on" : "off"}</button>
-        </form>
+        <div className="button-row">
+          <Link href={`/recruiter/${requirement.id}/kit`}>Screening kit</Link>
+          <Link href={`/recruiter/${requirement.id}/submit`}>Add a candidate</Link>
+          <form action={toggleHindi}>
+            <button type="submit">Hindi: {user.hindiToggle ? "on" : "off"}</button>
+          </form>
+        </div>
       </div>
       <DraftLabel model={brief.model} generatedAt={brief.createdAt} />
 

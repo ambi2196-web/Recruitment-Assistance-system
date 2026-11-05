@@ -1,0 +1,3 @@
+Spoke with Priya on Tuesday. She is based in Phoenix, AZ and works MST.
+Explained the Snowflake migration clearly. Described why she moved Spark jobs to Python.
+Asking $68/hr on C2C. She knows people at Tarnbrook but has not worked there.

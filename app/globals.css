@@ -129,3 +129,16 @@ input:not([type="hidden"]), select, textarea {
 .brief .two-columns { gap: 20px; }
 .brief .copy-text { margin: 2px 0; padding: 4px 8px; }
 main:has(.brief) { padding-top: 6px; padding-bottom: 6px; }
+
+.brief th, .brief td { padding: 2px 6px; }
+.missing, .unresolved { color: var(--error-text); }
+.flag { border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; margin: 0; display: grid; gap: 4px; }
+.flag legend { padding: 0 4px; }
+.radio { display: flex; gap: 4px; align-items: center; color: var(--text); }
+.radio input { width: auto; }
+
+@media print {
+  .top-bar, .no-print { display: none; }
+  body { background: #fff; color: #000; }
+  main { padding: 0; max-width: none; }
+}

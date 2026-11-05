@@ -112,6 +112,8 @@ export const screeningKits = pgTable("screening_kits", {
   id: serial("id").primaryKey(),
   briefId: integer("brief_id").notNull().references(() => briefs.id),
   json: jsonb("json").notNull(),
+  model: text("model").notNull(),
+  promptVersion: text("prompt_version").notNull(),
   createdAt: createdAt(),
 });
 
@@ -160,6 +162,16 @@ export const errorFlags = pgTable("error_flags", {
 export const requirementActions = pgTable("requirement_actions", {
   id: serial("id").primaryKey(),
   requirementId: integer("requirement_id").notNull().references(() => requirements.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  action: text("action").notNull(),
+  detail: jsonb("detail"),
+  createdAt: createdAt(),
+});
+
+// Who approved, forwarded or rejected a submission (G5).
+export const submissionActions = pgTable("submission_actions", {
+  id: serial("id").primaryKey(),
+  submissionId: integer("submission_id").notNull().references(() => submissions.id),
   userId: integer("user_id").notNull().references(() => users.id),
   action: text("action").notNull(),
   detail: jsonb("detail"),
