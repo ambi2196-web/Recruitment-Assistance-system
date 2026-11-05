@@ -143,6 +143,11 @@ export const submissions = pgTable("submissions", {
   rejectReason: text("reject_reason"),
   clientOutcome: text("client_outcome"),
   outcomeReason: text("outcome_reason"),
+  // Plain timestamps keep metrics and reminders simple to work out.
+  submittedAt: timestamp("submitted_at", { withTimezone: true }),
+  forwardedAt: timestamp("forwarded_at", { withTimezone: true }),
+  outcomeAt: timestamp("outcome_at", { withTimezone: true }),
+  noReplyAt: timestamp("no_reply_at", { withTimezone: true }),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });
@@ -151,10 +156,25 @@ export const errorFlags = pgTable("error_flags", {
   id: serial("id").primaryKey(),
   targetType: text("target_type").notNull(),
   targetId: integer("target_id").notNull(),
+  requirementId: integer("requirement_id").notNull().references(() => requirements.id),
+  agent: text("agent").notNull(),
   lineRef: text("line_ref").notNull(),
   note: text("note"),
+  reportedBy: integer("reported_by").notNull().references(() => users.id),
   status: errorFlagStatus("status").notNull().default("open"),
   fixedCommit: text("fixed_commit"),
+  createdAt: createdAt(),
+});
+
+// Holds aggregated counts only, never anything about one candidate (FR-11.2).
+export const weeklyDigests = pgTable("weekly_digests", {
+  id: serial("id").primaryKey(),
+  periodStart: timestamp("period_start", { withTimezone: true }).notNull(),
+  periodEnd: timestamp("period_end", { withTimezone: true }).notNull(),
+  tableJson: jsonb("table_json").notNull(),
+  observationsJson: jsonb("observations_json").notNull(),
+  model: text("model").notNull(),
+  promptVersion: text("prompt_version").notNull(),
   createdAt: createdAt(),
 });
 

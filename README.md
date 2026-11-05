@@ -2,7 +2,7 @@
 
 An internal tool for a US IT contract-staffing team. AI drafts; humans decide. See `REQUIREMENTS.md` for the product and `DEPLOYMENT_PLAN.md` for the rollout.
 
-**Status:** Phase 2 (screening kit and submission quality). Data is synthetic. The AI is a mock with canned answers, so it shows the workflow, not real AI quality.
+**Status:** Phase 3 (feedback loop and metrics). Data is synthetic. The AI is a mock with canned answers, so it shows the workflow, not real AI quality.
 
 ## Run it on your computer
 
@@ -43,7 +43,11 @@ Stop the app before running `db:setup` again, because the local database allows 
 5. From the brief, open **Screening kit**, then **Add a candidate**. Paste a resume from `seed/resumes/` and its notes from `seed/call-notes/`. R3 shows the hidden instruction flag.
 6. Mark every flag with a note, then approve. You will get Conrep-ready text.
 7. Switch to **Stakeholder One** and open the submission to forward or reject it. The recruiter then sees the outcome.
-8. Switch to **Admin** to see every AI call and its redacted input. **Client registry** is linked from there.
+8. On a forwarded submission, log what the client said. The stakeholder inbox shows reminders at day 3 and day 7.
+9. On any brief or kit line, a recruiter can click **Wrong** and add a note.
+10. Switch to **Admin** to see every AI call and its redacted input. **Metrics**, **Weekly digest**, **Error log** and **Client registry** are linked from there.
+
+To start again with clean demo data, stop the app, delete the `.data` folder, then run `npm run db:setup`.
 
 ## Check it
 
@@ -70,6 +74,7 @@ Set these in the Vercel project:
 | `DEMO_MODE` | `true` |
 | `DEMO_ACCESS_PASSWORD` | A password to share with demo viewers. The username is `demo` |
 | `MONTHLY_BUDGET_USD` | `25` |
+| `CRON_SECRET` | A long random value. Vercel sends it with the weekly digest job |
 | `LLM_PROVIDER` / `LLM_MODEL` | `mock` / `mock-1` |
 
 The app will not serve pages until these are safe. Then run `npm run db:setup` once from your computer, with `DATABASE_URL` in `.env` pointing at the same database.

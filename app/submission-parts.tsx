@@ -7,6 +7,10 @@ const STATUS_LABELS: Record<string, string> = {
   submitted: "With the stakeholder",
   forwarded: "Forwarded to the client",
   rejected: "Rejected by the stakeholder",
+  interview: "Client: interview",
+  client_rejected: "Client: rejected",
+  selected: "Client: selected",
+  no_reply: "Client: no reply yet",
 };
 
 export function rejectionInPlainEnglish(reason: string) {
@@ -24,7 +28,9 @@ export function SubmissionList({ rows, basePath }: { rows: SubmissionRow[]; base
           <Link href={`${basePath}/${row.id}`}>
             <strong>{row.candidateName}</strong>
             <span className="muted">{row.requirementTitle} · {STATUS_LABELS[row.status] ?? row.status}</span>
-            {row.rejectReason && <span className="muted">{rejectionInPlainEnglish(row.rejectReason)}</span>}
+            {(row.outcomeReason ?? row.rejectReason) && (
+              <span className="muted">{rejectionInPlainEnglish((row.outcomeReason ?? row.rejectReason) as string)}</span>
+            )}
           </Link>
         </li>
       ))}

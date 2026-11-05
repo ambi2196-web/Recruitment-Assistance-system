@@ -206,6 +206,7 @@ export async function submitToStakeholder(
       flagResolutionsJson: input.resolutions,
       editedSummary: editedLines.join("\n"),
       status: "submitted",
+      submittedAt: new Date(),
       updatedAt: new Date(),
     })
     .where(eq(submissions.id, submissionId));
@@ -229,7 +230,7 @@ export async function decideSubmission(
   if (input.decision === "forward") {
     await db
       .update(submissions)
-      .set({ status: "forwarded", stakeholderDecision: "forwarded", updatedAt: new Date() })
+      .set({ status: "forwarded", stakeholderDecision: "forwarded", forwardedAt: new Date(), updatedAt: new Date() })
       .where(eq(submissions.id, submissionId));
     await logAction(context, submissionId, "forwarded");
     return;
@@ -250,6 +251,76 @@ export async function decideSubmission(
     })
     .where(eq(submissions.id, submissionId));
   await logAction(context, submissionId, "rejected", { reason, note });
+}
+
+export const CLIENT_OUTCOMES = {
+  interview: "Interview",
+  client_rejected: "Rejected",
+  selected: "Selected",
+  no_reply: "No reply yet",
+} as const;
+export type ClientOutcome = keyof typeof CLIENT_OUTCOMES;
+
+/** One click for the stakeholder, so that outcomes actually get logged (FR-9.1). */
+export async function logOutcome(
+  context: Context,
+  submissionId: number,
+  input: { outcome: ClientOutcome; reason?: string; note?: string },
+): Promise<void> {
+  const { db } = context;
+  const submission = await loadSubmission(db, submissionId);
+  if (!["forwarded", "no_reply", "interview"].includes(submission.status)) {
+    throw new WorkflowError("An outcome can be logged only after a submission is forwarded.");
+  }
+  if (!(input.outcome in CLIENT_OUTCOMES)) throw new WorkflowError("Please choose an outcome.");
+  if (submission.status === "interview" && input.outcome === "no_reply") {
+    throw new WorkflowError("This submission already has an interview logged.");
+  }
+
+  const now = new Date();
+  if (input.outcome === "no_reply") {
+    // Not a client outcome. It records that someone checked, and quiets the reminder.
+    await db.update(submissions).set({ status: "no_reply", noReplyAt: now, updatedAt: now }).where(eq(submissions.id, submissionId));
+    await logAction(context, submissionId, "no_reply");
+    return;
+  }
+
+  const note = input.note?.trim() ?? "";
+  const reason = input.outcome === "client_rejected" ? (input.reason ?? "") : "";
+  if (input.outcome === "client_rejected") {
+    if (!(REJECT_REASONS as readonly string[]).includes(reason)) throw new WorkflowError("Please choose a reason.");
+    if (reason === "Other" && !note) throw new WorkflowError("Please add a note for the reason Other.");
+  }
+
+  await db
+    .update(submissions)
+    .set({
+      status: input.outcome,
+      clientOutcome: CLIENT_OUTCOMES[input.outcome],
+      outcomeReason: reason ? (note ? `${reason}: ${note}` : reason) : null,
+      outcomeAt: now,
+      updatedAt: now,
+    })
+    .where(eq(submissions.id, submissionId));
+  await logAction(context, submissionId, `outcome_${input.outcome}`, { reason, note });
+}
+
+const DAY_MS = 86_400_000;
+
+function reminderStage(from: Date, at: Date): 0 | 3 | 7 {
+  const days = (at.getTime() - from.getTime()) / DAY_MS;
+  return days >= 7 ? 7 : days >= 3 ? 3 : 0;
+}
+
+/**
+ * Day 3 and day 7 reminders (FR-9.2). "No reply yet" quiets the current stage,
+ * so a check on day 4 stays quiet until day 7. Worked out on page load, so no job is needed.
+ */
+export function reminderDay(submission: { forwardedAt: Date | null; noReplyAt: Date | null; status: string }, now = new Date()): 3 | 7 | null {
+  if (!submission.forwardedAt || !["forwarded", "no_reply"].includes(submission.status)) return null;
+  const stage = reminderStage(submission.forwardedAt, now);
+  const checked = submission.noReplyAt ? reminderStage(submission.forwardedAt, submission.noReplyAt) : 0;
+  return stage > checked ? (stage as 3 | 7) : null;
 }
 
 export const restoreCandidate = (text: string, name: string) => text.replaceAll("[CANDIDATE]", name);
@@ -297,6 +368,10 @@ export function listSubmissions(db: Db, filter: { requirementId?: number; recrui
       id: submissions.id,
       status: submissions.status,
       rejectReason: submissions.rejectReason,
+      clientOutcome: submissions.clientOutcome,
+      outcomeReason: submissions.outcomeReason,
+      forwardedAt: submissions.forwardedAt,
+      noReplyAt: submissions.noReplyAt,
       candidateName: candidates.displayName,
       requirementTitle: requirements.title,
       clientCode: clients.code,

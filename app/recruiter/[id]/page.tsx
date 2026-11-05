@@ -6,6 +6,7 @@ import { requireRole } from "@/lib/session";
 import { DraftLabel } from "../../draft-label";
 import { toggleHindi } from "../../requirement-actions";
 import { loadRequirementView } from "../../requirement-view";
+import { WrongLine } from "../../wrong-line";
 
 function Chips({ items }: { items: string[] }) {
   if (items.length === 0) return <span className="muted">None</span>;
@@ -38,6 +39,7 @@ export default async function RecruiterRequirement({ params }: { params: Promise
   const changes = brief.whatChanged as ChangeSection[] | null;
   const filters = data.linkedin_recruiter_filters;
   const ambiguous = checkJson?.ambiguous_terms ?? [];
+  const wrong = (lineRef: string) => <WrongLine target="brief" targetId={brief.id} lineRef={lineRef} />;
 
   return (
     <div className="brief">
@@ -80,12 +82,13 @@ export default async function RecruiterRequirement({ params }: { params: Promise
       <div className="brief-grid">
         <section>
           <h2>The project</h2>
-          <ul className="tight">{data.project_story.map((line) => <li key={line}>{line}</li>)}</ul>
+          <ul className="tight">{data.project_story.map((line) => <li key={line}>{line}{wrong(line)}</li>)}</ul>
           {user.hindiToggle && data.hindi_lines?.project_story && <p className="muted" lang="hi">{data.hindi_lines.project_story}</p>}
           <h2>Must-haves</h2>
-          <ul className="tight">{data.must_haves.map((item) => <li key={item}>{item}</li>)}</ul>
+          <ul className="tight">{data.must_haves.map((item) => <li key={item}>{item}{wrong(item)}</li>)}</ul>
           <h2>Nice-to-haves</h2>
-          <p><Chips items={data.nice_to_haves} /></p>
+          {data.nice_to_haves.length === 0 && <p className="muted">None</p>}
+          <ul className="tight">{data.nice_to_haves.map((item) => <li key={item}>{item}{wrong(item)}</li>)}</ul>
         </section>
 
         <section>
@@ -93,24 +96,25 @@ export default async function RecruiterRequirement({ params }: { params: Promise
           {data.tech_lineage.map((tech) => (
             <p key={tech.named_in_requirement}>
               <strong>{tech.named_in_requirement}</strong>: {tech.plain_explanation} Also: <Chips items={tech.current_or_related_names} />.
+              {wrong(`${tech.named_in_requirement}: ${tech.plain_explanation}`)}
             </p>
           ))}
           <h2>Similar job titles</h2>
-          <p><Chips items={data.adjacent_job_titles} /></p>
+          <p><Chips items={data.adjacent_job_titles} />{data.adjacent_job_titles.length > 0 && wrong(`Similar job titles: ${data.adjacent_job_titles.join(", ")}`)}</p>
           <h2>Target companies</h2>
           {data.target_companies.length === 0 && <p className="muted">None suggested</p>}
-          {data.target_companies.map((company) => <p key={company.name}><strong>{company.name}</strong>: {company.why}</p>)}
+          {data.target_companies.map((company) => <p key={company.name}><strong>{company.name}</strong>: {company.why}{wrong(company.name)}</p>)}
         </section>
 
         <section>
           <h2>LinkedIn Recruiter filters</h2>
           <dl className="filters">
-            <dt>Job titles</dt><dd><Chips items={filters.job_titles} /></dd>
-            <dt>Skills</dt><dd><Chips items={filters.skills} /></dd>
-            <dt>Locations</dt><dd><Chips items={filters.locations} /></dd>
-            <dt>Years</dt><dd>{filters.years_of_experience}</dd>
-            <dt>Industries</dt><dd><Chips items={filters.industries} /></dd>
-            <dt>Companies</dt><dd><Chips items={filters.companies_to_include} /></dd>
+            <dt>Job titles</dt><dd><Chips items={filters.job_titles} />{wrong(`Filter, job titles: ${filters.job_titles.join(", ")}`)}</dd>
+            <dt>Skills</dt><dd><Chips items={filters.skills} />{wrong(`Filter, skills: ${filters.skills.join(", ")}`)}</dd>
+            <dt>Locations</dt><dd><Chips items={filters.locations} />{wrong(`Filter, locations: ${filters.locations.join(", ")}`)}</dd>
+            <dt>Years</dt><dd>{filters.years_of_experience}{wrong(`Filter, years: ${filters.years_of_experience}`)}</dd>
+            <dt>Industries</dt><dd><Chips items={filters.industries} />{wrong(`Filter, industries: ${filters.industries.join(", ")}`)}</dd>
+            <dt>Companies</dt><dd><Chips items={filters.companies_to_include} />{wrong(`Filter, companies: ${filters.companies_to_include.join(", ")}`)}</dd>
           </dl>
           <p className="muted">Confidence: {data.confidence}</p>
         </section>

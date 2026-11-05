@@ -26,7 +26,14 @@ export default async function RecruiterSubmission({ params }: { params: Promise<
       {submission.rejectReason && (
         <p className="notice error"><strong>Rejected.</strong> {rejectionInPlainEnglish(submission.rejectReason)}</p>
       )}
-      {submission.status === "forwarded" && <p className="notice changed">Forwarded to the client.</p>}
+      {submission.status === "forwarded" && <p className="notice changed">Forwarded to the client. No outcome yet.</p>}
+      {submission.status === "no_reply" && <p className="notice changed">Forwarded to the client. No reply yet.</p>}
+      {submission.clientOutcome && (
+        <p className={`notice ${submission.status === "client_rejected" ? "error" : "changed"}`}>
+          <strong>Client outcome: {submission.clientOutcome}.</strong>{" "}
+          {submission.outcomeReason && rejectionInPlainEnglish(submission.outcomeReason)}
+        </p>
+      )}
 
       <div className="two-columns">
         <section>

@@ -8,6 +8,9 @@ export function proxy(request: NextRequest) {
     return new NextResponse("Unavailable: this deployment's settings are unsafe.", { status: 503 });
   }
 
+  // The scheduled digest job cannot type a password. Its route checks CRON_SECRET instead.
+  if (request.nextUrl.pathname === "/api/digest") return NextResponse.next();
+
   const password = process.env.DEMO_ACCESS_PASSWORD;
   if (isDemoMode() && password && !hasDemoAccess(request.headers.get("authorization"), password)) {
     return new NextResponse("Access required.", {

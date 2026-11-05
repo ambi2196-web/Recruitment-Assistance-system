@@ -1,5 +1,35 @@
 # Changelog
 
+## Phase 3 — Feedback loop and metrics (5 November 2026, built on the mock AI)
+
+Started before Phases 0 to 2 had fully passed, on the owner's instruction.
+
+### Added
+- One-click client outcomes, shown to the recruiter with the reason (M9).
+- In-app reminders at day 3 and day 7, worked out when the page opens (FR-9.2).
+- "Wrong" on brief and kit lines, and an admin error log with commit links (M10).
+- Agent A5 weekly digest from aggregated counts, with an admin button and a weekly job (M11, FR-11.3).
+- Metrics page with the section 4 metrics and three charts (M12).
+- Fictional outcomes in `seed/outcomes.ts`, so the digest and metrics have data in a demo.
+
+### Decisions
+- "No reply yet" is not a client outcome. It quiets the current reminder until the next stage.
+- Outcome logged is measured against forwarded submissions, not all submissions. Section 4 says "all", but a submission the stakeholder rejected never reaches the client, so it could not have an outcome.
+- Selected counts as an interview in submit-to-interview.
+- Metrics count everything in a deployment. The pilot has its own database, so it needs no date filter.
+- Draft-to-submit time is shown as a guide. Self-report at pilot end stays the real measure.
+- Added `weekly_digests`, four timestamps on `submissions`, and three fields on `error_flags`.
+- `db:seed` now refuses to run when `APP_ENV=pilot`.
+- `/api/digest` skips the demo password and checks `CRON_SECRET` instead, because a scheduler cannot type a password. With no secret set, it stays closed.
+
+### Known to be weak
+- **Digest observations are mock text.** The counts are real. A real model's observations are untested.
+- **The weekly job has never run on a host.** The route is tested, but `vercel.json` needs a deployment. Hobby plan limits may apply.
+- Reminders are in-app only, so they appear only if the stakeholder opens the desk. Email comes in Phase 4.
+- The error log and metrics are admin-only. Recruiters see only that their flag was sent.
+- Metrics have no baselines yet, so "Better than baseline" cannot be judged (see section 4).
+- Local demo data made before this fix has seed submissions under Recruiter Two.
+
 ## Phase 2 — Screening kit and submission quality (5 November 2026, built on the mock AI)
 
 Started before Phases 0 and 1 had fully passed, on the owner's instruction.

@@ -9,6 +9,7 @@ import { DraftLabel } from "../../../draft-label";
 import { PrintButton } from "../../../print-button";
 import { loadRequirementView } from "../../../requirement-view";
 import { makeKit } from "../../../submission-actions";
+import { WrongLine } from "../../../wrong-line";
 
 export default async function Kit({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireRole("recruiter");
@@ -44,6 +45,7 @@ export default async function Kit({ params }: { params: Promise<{ id: string }> 
         {data.questions.map((item) => (
           <li key={item.question}>
             <strong>{item.question}</strong>
+            <WrongLine target="kit" targetId={kit.id} lineRef={item.question} />
             <br />Good signs: {item.good_answer_signals.join("; ")}
             <br />Red flags: {item.red_flags.join("; ")}
             <br />Follow up: {item.follow_up}
@@ -52,7 +54,11 @@ export default async function Kit({ params }: { params: Promise<{ id: string }> 
       </ol>
 
       <h2>Identity checks</h2>
-      <ul className="tight">{data.identity_checks.map((check) => <li key={check}>{check}</li>)}</ul>
+      <ul className="tight">
+        {data.identity_checks.map((check) => (
+          <li key={check}>{check}<WrongLine target="kit" targetId={kit.id} lineRef={check} /></li>
+        ))}
+      </ul>
     </div>
   );
 }

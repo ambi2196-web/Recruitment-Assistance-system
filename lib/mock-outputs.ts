@@ -239,6 +239,8 @@ export function mockOutput(agent: string, input: string): unknown {
       return mockKit;
     case "a4_submission_drafter":
       return mockDraft(input);
+    case "a5_weekly_digest":
+      return { observations: ["Mock observation. No real model was used.", "These counts are small, so treat any pattern as an early sign only."] };
     default:
       return { status: "ok", characters_received: input.length };
   }

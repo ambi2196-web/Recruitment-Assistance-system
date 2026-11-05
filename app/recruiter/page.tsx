@@ -2,7 +2,9 @@ import { asc } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { clients } from "@/lib/db/schema";
 import { requireRole } from "@/lib/session";
+import { latestDigest } from "@/lib/digest";
 import { ActionForm, SubmitButton } from "../action-form";
+import { DraftLabel } from "../draft-label";
 import { intake } from "../requirement-actions";
 import { RequirementList } from "../requirement-list";
 import { SubmissionList } from "../submission-parts";
@@ -12,6 +14,7 @@ export default async function RecruiterInbox() {
   const user = await requireRole("recruiter");
   const clientOptions = await getDb().select({ id: clients.id, name: clients.name }).from(clients).orderBy(asc(clients.name));
   const mine = await listSubmissions(getDb(), { recruiterId: user.id });
+  const digest = await latestDigest(getDb());
 
   return (
     <div className="two-columns">
@@ -20,6 +23,13 @@ export default async function RecruiterInbox() {
         <RequirementList recruiterId={user.id} basePath="/recruiter" />
         <h2>My submissions</h2>
         <SubmissionList rows={mine} basePath="/recruiter/submissions" />
+        {digest && (
+          <>
+            <h2>This week's patterns</h2>
+            <DraftLabel model={digest.model} generatedAt={digest.createdAt} />
+            <ul className="tight">{digest.observations.map((line) => <li key={line}>{line}</li>)}</ul>
+          </>
+        )}
       </section>
       <section className="card">
         <h2>Forward a client email</h2>

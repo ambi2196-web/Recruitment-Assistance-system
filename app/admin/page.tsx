@@ -25,7 +25,12 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   return (
     <>
       <h1>Admin</h1>
-      <p><Link href="/admin/registry">Client registry</Link></p>
+      <p className="button-row">
+        <Link href="/admin/metrics">Metrics</Link>
+        <Link href="/admin/digest">Weekly digest</Link>
+        <Link href="/admin/errors">Error log</Link>
+        <Link href="/admin/registry">Client registry</Link>
+      </p>
       <p>
         AI spend this month: ${spend.toFixed(4)} of ${monthlyBudgetUsd().toFixed(2)}
       </p>
