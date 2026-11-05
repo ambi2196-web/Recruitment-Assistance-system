@@ -101,6 +101,8 @@ export const briefs = pgTable(
     version: integer("version").notNull(),
     json: jsonb("json").notNull(),
     whatChanged: jsonb("what_changed"),
+    model: text("model").notNull(),
+    promptVersion: text("prompt_version").notNull(),
     createdAt: createdAt(),
   },
   (t) => [uniqueIndex("briefs_requirement_version").on(t.requirementId, t.version)],
@@ -151,6 +153,16 @@ export const errorFlags = pgTable("error_flags", {
   note: text("note"),
   status: errorFlagStatus("status").notNull().default("open"),
   fixedCommit: text("fixed_commit"),
+  createdAt: createdAt(),
+});
+
+// Who did what and when (G5, FR-3.5).
+export const requirementActions = pgTable("requirement_actions", {
+  id: serial("id").primaryKey(),
+  requirementId: integer("requirement_id").notNull().references(() => requirements.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  action: text("action").notNull(),
+  detail: jsonb("detail"),
   createdAt: createdAt(),
 });
 

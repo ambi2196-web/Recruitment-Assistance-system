@@ -7,7 +7,7 @@ export default async function StakeholderInbox() {
   return (
     <>
       <h1>Stakeholder inbox</h1>
-      <RequirementList />
+      <RequirementList basePath="/stakeholder" />
     </>
   );
 }

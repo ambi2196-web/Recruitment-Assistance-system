@@ -2,7 +2,7 @@
 
 An internal tool for a US IT contract-staffing team. AI drafts; humans decide. See `REQUIREMENTS.md` for the product and `DEPLOYMENT_PLAN.md` for the rollout.
 
-**Status:** Phase 0 (foundation). Data is synthetic and the AI is a mock.
+**Status:** Phase 1 (requirement check and brief). Data is synthetic. The AI is a mock with canned answers, so it shows the workflow, not real AI quality.
 
 ## Run it on your computer
 
@@ -36,9 +36,11 @@ Stop the app before running `db:setup` again, because the local database allows 
 
 ## Try it
 
-1. Choose **Admin**.
-2. Click **Run pipeline test**. A new row appears in the AI call log, showing the redacted input.
-3. Click **Switch user** and choose a recruiter or stakeholder to see their inbox.
+1. Choose **Recruiter One**. Paste an email from `seed/requirements/` into the form and send it to the desk. You will see the redacted text.
+2. Click **Switch user** and choose **Stakeholder One**. Open the requirement and click **SEND** to get copy-ready text.
+3. Paste a client answer, such as "We need a technical ontologist to make our data machine-readable."
+4. Switch to **Recruiter One** and open the requirement. You will see brief v2 with "What changed".
+5. Switch to **Admin** to see every AI call and its redacted input. **Client registry** is linked from there.
 
 ## Check it
 

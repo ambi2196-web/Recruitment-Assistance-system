@@ -1,5 +1,33 @@
 # Changelog
 
+## Phase 1 — Requirement check and brief (5 November 2026, built on the mock AI)
+
+Started before Phase 0's deployed-link check passed, on the owner's instruction.
+
+### Added
+- Intake for recruiters, with redaction before anything is saved or sent (M1).
+- Admin client registry and prospect terms (FR-1.2).
+- Agent A1 requirement check, and the stakeholder SEND, EDIT and SKIP checkpoint (M2, M3).
+- Agent A2 recruiter brief, with versions, "What changed", assumption banner and Hindi toggle (M4).
+- Code rejects boolean syntax in LinkedIn filters, instead of trusting the prompt (G8).
+- Mock outputs for all three seed requirements, so the workflow runs with no AI provider.
+
+### Decisions
+- Added a `requirement_actions` table for who did what and when (FR-3.5, G5). Section 10.1 had no home for this.
+- Added `model` and `prompt_version` to `briefs`, because G6 must show the model.
+- Requirement titles are redacted, because they appear in lists.
+- A brief v1 is created on SEND as well as SKIP, so recruiters can start while the client replies. Open questions show as a banner.
+
+### Known to be weak
+- **The AI quality checks have not really passed.** Flagging "ontology", and the content of every brief, comes from canned mock answers. These checks need a real model.
+- **Speed and one-screen fit are mock results.** Pages fit 1366×768 with mock text, and a real model may write more. The 60-second target is untested.
+- **Person names still reach the AI input.** "Dana Whitlock" stays in REQ-A's redacted text. The owner needs to decide on this before a real provider is connected.
+- SEND and SKIP save the decision before the brief is written. If the brief fails, the stakeholder sees a retry button.
+- Any stakeholder can open any requirement, because `Requirement` has no stakeholder field yet.
+- Registry changes do not re-redact requirements already saved.
+- Original text is limited by role on the pages, not by the database.
+- No Playwright test yet. The flow was checked by hand in the browser and by workflow tests.
+
 ## Phase 0 — Foundation (5 November 2026)
 
 ### Added
@@ -24,4 +52,4 @@
 - The Vercel, Neon and GitHub setup is not done, because it needs the owner's accounts.
 - The GitHub checks have not run yet, as nothing has been pushed.
 - FR-1.6 access limits are not enforced in depth yet. The inboxes show only redacted text, and nothing displays original text.
-- There is no lint step and no Playwright test yet. The Playwright demo path arrives with Phase 1's flow.
+- There is no lint step and no Playwright test yet.

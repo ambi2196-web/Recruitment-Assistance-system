@@ -4,12 +4,13 @@ import { and, gte, lt, sum } from "drizzle-orm";
 import type { z } from "zod";
 import { getDb, type Db } from "./db";
 import { aiCalls, clients, prospectTerms } from "./db/schema";
+import { mockOutput } from "./mock-outputs";
 import { selfCheck, type RedactedText, type Registry } from "./redaction";
 
 // This is the only door to a model. There is deliberately no way to pass
 // tools here (G2, G3), and input must already be redacted (G1).
 
-export type ModelRequest = { model: string; system: string; user: string };
+export type ModelRequest = { agent: string; model: string; system: string; user: string };
 export type ModelResponse = { text: string; inputTokens: number; outputTokens: number };
 export type LlmProvider = { name: string; complete(request: ModelRequest): Promise<ModelResponse> };
 
@@ -21,11 +22,11 @@ export class LlmOutputError extends Error {}
 // Lets the whole app run with no API key and no data leaving the machine.
 const mockProvider: LlmProvider = {
   name: "mock",
-  async complete({ user }) {
+  async complete({ agent, user }) {
     return {
-      text: JSON.stringify({ status: "ok", characters_received: user.length }),
+      text: JSON.stringify(mockOutput(agent, user)),
       inputTokens: Math.ceil(user.length / 4),
-      outputTokens: 20,
+      outputTokens: 200,
     };
   },
 };
@@ -100,7 +101,7 @@ export type AgentCall<T> = {
   provider?: LlmProvider;
 };
 
-export type AgentResult<T> = { data: T; model: string; generatedAt: Date };
+export type AgentResult<T> = { data: T; model: string; promptVersion: string; generatedAt: Date };
 
 export async function callAgent<T>(call: AgentCall<T>): Promise<AgentResult<T>> {
   const db = call.db ?? getDb();
@@ -139,7 +140,7 @@ export async function callAgent<T>(call: AgentCall<T>): Promise<AgentResult<T>> 
     const startedAt = Date.now();
     let response: ModelResponse;
     try {
-      response = await provider.complete({ model, system, user: call.input });
+      response = await provider.complete({ agent: call.agent, model, system, user: call.input });
     } catch (error) {
       await log({ success: false, error: "provider_error", latencyMs: Date.now() - startedAt });
       throw error;
@@ -149,7 +150,7 @@ export async function callAgent<T>(call: AgentCall<T>): Promise<AgentResult<T>> 
     const data = parseOutput(response.text, call.schema);
     if (data !== null) {
       await log({ success: true, latencyMs, response });
-      return { data, model, generatedAt: new Date() };
+      return { data, model, promptVersion, generatedAt: new Date() };
     }
     await log({ success: false, error: "invalid_output", latencyMs, response });
   }

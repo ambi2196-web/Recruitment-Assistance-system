@@ -9,6 +9,8 @@
   --warn-text: #6b4e00;
   --error-bg: #fde8e8;
   --error-text: #8a1c1c;
+  --changed-bg: #e3f1e6;
+  --changed-text: #1e5a30;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,6 +25,8 @@
     --warn-text: #f3d98b;
     --error-bg: #431d1d;
     --error-text: #f5b5b5;
+    --changed-bg: #1c3a26;
+    --changed-text: #b5e6c4;
   }
 }
 
@@ -76,3 +80,52 @@ button {
 table { width: 100%; border-collapse: collapse; background: var(--panel); }
 th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 th { color: var(--muted); font-weight: 600; }
+
+a { color: var(--accent); }
+button:disabled { opacity: 0.6; cursor: wait; }
+
+label { display: grid; gap: 4px; color: var(--muted); }
+input:not([type="hidden"]), select, textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+.stack { display: grid; gap: 8px; }
+.button-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.inline-form { display: flex; gap: 8px; }
+.two-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.tight { margin: 4px 0; padding-left: 18px; }
+.copy-text { white-space: pre-wrap; font: inherit; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+.ambiguity { background: var(--warn-bg); color: var(--warn-text); }
+.changed { background: var(--changed-bg); color: var(--changed-text); }
+
+.inbox { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.inbox a { display: grid; padding: 8px 12px; color: var(--text); text-decoration: none; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+
+/* The brief must fit one 1366x768 screen (FR-4.5), so it is dense on purpose. */
+.brief { font-size: 13px; line-height: 1.35; }
+.brief h1 { font-size: 17px; margin: 0; }
+.brief h2 { font-size: 13px; margin: 8px 0 2px; }
+.brief p { margin: 2px 0; }
+.brief .notice { padding: 4px 10px; margin: 4px 0; }
+.brief-head { display: flex; justify-content: space-between; align-items: center; }
+.brief-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.filters { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; margin: 0; }
+.filters dt { color: var(--muted); }
+.filters dd { margin: 0; }
+
+@media (max-width: 760px) {
+  .two-columns, .brief-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.brief .stack { gap: 4px; }
+.brief textarea { padding: 3px 6px; }
+.brief button { padding: 3px 10px; }
+.brief .two-columns { gap: 20px; }
+.brief .copy-text { margin: 2px 0; padding: 4px 8px; }
+main:has(.brief) { padding-top: 6px; padding-bottom: 6px; }

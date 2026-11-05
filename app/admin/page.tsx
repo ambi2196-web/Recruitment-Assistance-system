@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { aiCalls, users } from "@/lib/db/schema";
@@ -24,6 +25,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   return (
     <>
       <h1>Admin</h1>
+      <p><Link href="/admin/registry">Client registry</Link></p>
       <p>
         AI spend this month: ${spend.toFixed(4)} of ${monthlyBudgetUsd().toFixed(2)}
       </p>
