@@ -271,6 +271,13 @@ describe("weekly digest (M11)", () => {
     });
   });
 
+  it("keeps the mailbox route closed without the secret", async () => {
+    const { GET: mailboxGet } = await import("@/app/api/mailbox/route");
+    vi.stubEnv("CRON_SECRET", "test-secret");
+    const response = await mailboxGet(new NextRequest("http://localhost/api/mailbox", { headers: { authorization: "Bearer wrong" } }));
+    expect(response.status).toBe(401);
+  });
+
   it("refuses an empty week", async () => {
     await expect(generateDigest({ db: getDb() }, new Date("2020-01-01T00:00:00Z"))).rejects.toThrow("no submissions");
   });

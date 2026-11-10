@@ -49,7 +49,7 @@ export default async function RecruiterRequirement({ params }: { params: Promise
           <Link href={`/recruiter/${requirement.id}/kit`}>Screening kit</Link>
           <Link href={`/recruiter/${requirement.id}/submit`}>Add a candidate</Link>
           <form action={toggleHindi}>
-            <button type="submit">Hindi: {user.hindiToggle ? "on" : "off"}</button>
+            <button type="submit" aria-pressed={user.hindiToggle}>Hindi line: {user.hindiToggle ? "on" : "off"}</button>
           </form>
         </div>
       </div>

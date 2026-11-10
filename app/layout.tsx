@@ -16,6 +16,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <a href="#main" className="skip-link">Skip to main content</a>
         <header className="top-bar">
           <Link href="/" className="brand">Requirement Desk</Link>
           {user && (
@@ -25,7 +26,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             </form>
           )}
         </header>
-        <main>{children}</main>
+        <main id="main">{children}</main>
       </body>
     </html>
   );

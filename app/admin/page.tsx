@@ -30,6 +30,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
         <Link href="/admin/digest">Weekly digest</Link>
         <Link href="/admin/errors">Error log</Link>
         <Link href="/admin/registry">Client registry</Link>
+        <Link href="/admin/mailbox">Desk mailbox</Link>
       </p>
       <p>
         AI spend this month: ${spend.toFixed(4)} of ${monthlyBudgetUsd().toFixed(2)}

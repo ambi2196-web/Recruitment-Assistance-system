@@ -15,6 +15,11 @@ import {
   skipQuestions,
 } from "@/lib/requirements";
 import { getCurrentUser, requireRole } from "@/lib/session";
+import type { Db } from "@/lib/db";
+import type { MailClient } from "@/lib/mail/types";
+import { notifyBriefReady, notifyCheckReady, processInbox } from "@/lib/mailbox";
+import { gmailFromEnv } from "@/lib/mail/gmail";
+import { notifyLater } from "./notify";
 
 export type ActionState = { error: string | null };
 
@@ -30,10 +35,15 @@ async function attempt(work: () => Promise<void>): Promise<ActionState> {
   }
 }
 
-async function asStakeholder(form: FormData, work: (context: { db: ReturnType<typeof getDb>; userId: number }, requirementId: number) => Promise<void>) {
+async function asStakeholder(
+  form: FormData,
+  work: (context: { db: ReturnType<typeof getDb>; userId: number }, requirementId: number) => Promise<void>,
+  notify: (db: Db, mail: MailClient, requirementId: number) => Promise<void> = notifyBriefReady,
+) {
   const user = await requireRole("stakeholder");
   const requirementId = id(form);
   const result = await attempt(() => work({ db: getDb(), userId: user.id }, requirementId));
+  if (!result.error) notifyLater((db, mail) => notify(db, mail, requirementId));
   revalidatePath(`/stakeholder/${requirementId}`);
   return result;
 }
@@ -52,13 +62,14 @@ export async function intake(_previous: ActionState, form: FormData): Promise<Ac
     await checkRequirement(context, requirementId);
   });
 
+  if (requirementId && !result.error) notifyLater((db, mail) => notifyCheckReady(db, mail, requirementId));
   // If only the AI step failed, the requirement exists and can be retried from its page.
   if (requirementId) redirect(`/recruiter/${requirementId}`);
   return result;
 }
 
 export const runCheck = async (_previous: ActionState, form: FormData) =>
-  asStakeholder(form, (context, requirementId) => checkRequirement(context, requirementId));
+  asStakeholder(form, (context, requirementId) => checkRequirement(context, requirementId), notifyCheckReady);
 
 export const send = async (_previous: ActionState, form: FormData) =>
   asStakeholder(form, (context, requirementId) =>
@@ -102,6 +113,30 @@ export async function updateAliases(_previous: ActionState, form: FormData): Pro
   const aliases = text(form, "aliases").split(",").map((a) => a.trim()).filter(Boolean);
   await getDb().update(clients).set({ aliases }).where(eq(clients.id, Number(form.get("clientId"))));
   revalidatePath("/admin/registry");
+  return { error: null };
+}
+
+export async function checkInbox(): Promise<ActionState> {
+  await requireRole("admin");
+  const mail = gmailFromEnv();
+  if (!mail) return { error: "The desk mailbox is not set up yet. See docs/gmail-setup.md." };
+  const result = await attempt(async () => {
+    await processInbox({ db: getDb(), mail });
+  });
+  revalidatePath("/admin/mailbox");
+  return result;
+}
+
+export async function updateUserEmail(_previous: ActionState, form: FormData): Promise<ActionState> {
+  await requireRole("admin");
+  const email = text(form, "email").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Please enter a valid email address." };
+  try {
+    await getDb().update(users).set({ email }).where(eq(users.id, Number(form.get("userId"))));
+  } catch {
+    return { error: "That email is already used by another desk user." };
+  }
+  revalidatePath("/admin/mailbox");
   return { error: null };
 }
 

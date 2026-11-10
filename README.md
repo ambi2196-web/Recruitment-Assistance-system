@@ -2,7 +2,7 @@
 
 An internal tool for a US IT contract-staffing team. AI drafts; humans decide. See `REQUIREMENTS.md` for the product and `DEPLOYMENT_PLAN.md` for the rollout.
 
-**Status:** Phase 3 (feedback loop and metrics). Data is synthetic. The AI is a mock with canned answers, so it shows the workflow, not real AI quality.
+**Status:** Phase 4 (pilot readiness), waiting for the owner's sign-off in `docs/pilot-checklist.md`. Data is synthetic. The AI is a mock with canned answers, so it shows the workflow, not real AI quality.
 
 ## Run it on your computer
 
@@ -46,6 +46,10 @@ Stop the app before running `db:setup` again, because the local database allows 
 8. On a forwarded submission, log what the client said. The stakeholder inbox shows reminders at day 3 and day 7.
 9. On any brief or kit line, a recruiter can click **Wrong** and add a note.
 10. Switch to **Admin** to see every AI call and its redacted input. **Metrics**, **Weekly digest**, **Error log** and **Client registry** are linked from there.
+
+To try file uploads, run `npm run make-sample-files`, then upload `seed/files/R3-hidden-white-text.docx` under **Add a candidate**. Its hidden instruction is flagged.
+
+To connect the desk mailbox, follow `docs/gmail-setup.md`. To run the evaluation, see `docs/pilot-checklist.md`.
 
 To start again with clean demo data, stop the app, delete the `.data` folder, then run `npm run db:setup`.
 

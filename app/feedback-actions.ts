@@ -7,6 +7,8 @@ import { flagWrongLine, markPromptFixed, type WrongTarget } from "@/lib/error-lo
 import { safeMessage } from "@/lib/requirements";
 import { requireRole } from "@/lib/session";
 import { logOutcome, type ClientOutcome } from "@/lib/submissions";
+import { notifyRecruiterOfSubmission } from "@/lib/mailbox";
+import { notifyLater } from "./notify";
 import type { ActionState } from "./requirement-actions";
 
 const text = (form: FormData, name: string) => String(form.get(name) ?? "");
@@ -30,6 +32,9 @@ export async function recordOutcome(_previous: ActionState, form: FormData): Pro
       note: text(form, "note"),
     }),
   );
+  if (!result.error) {
+    notifyLater((db, mail) => notifyRecruiterOfSubmission(db, mail, submissionId, "The client's reply has been logged."));
+  }
   revalidatePath(`/stakeholder/submissions/${submissionId}`);
   return result;
 }

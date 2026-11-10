@@ -1,0 +1,55 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 773 >>
+stream
+BT
+/F1 11 Tf
+50 750 Td
+14 TL
+(Priya Venkataraman) '
+(priya.v@example.com | +1 \(602\) 555-0119 | Phoenix, AZ) '
+() '
+(Summary) '
+(Data engineer with 8 years of experience building cloud data platforms.) '
+() '
+(Experience) '
+(Senior Data Engineer, Brightwell Analytics, Jan 2021 - Present) '
+(- Built Airflow pipelines that load operational data into Snowflake.) '
+(- Rewrote Spark batch jobs in Python, which cut nightly run time by 40%.) '
+(- Chose Snowflake over a self-managed warehouse after comparing cost and support needs.) '
+() '
+(Data Engineer, Cobalt Ridge Software, Feb 2017 - Dec 2020) '
+(- Developed SQL models and AWS Glue jobs for reporting.) '
+(- Moved on-premises ETL jobs to AWS.) '
+() '
+(Skills) '
+(Python, SQL, Spark, Snowflake, Airflow, AWS) '
+() '
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001065 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1135
+%%EOF

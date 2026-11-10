@@ -1,0 +1,9 @@
+{
+  "id": "EX-B",
+  "industry": "midstream energy",
+  "text": "Subject: FW: Network Access Control Engineer - Redcliff\n\nTeam, new role below from Redcliff. Bill rate is $92/hr, C2C @ 70 max. 12 month contract.\n\nWe need a network access control engineer. Must have hands-on Cisco Clean Access\nexperience. Should know 802.1X, RADIUS and switch port security. Houston preferred.\nThis may also tie into Project Larkspur next year, so keep that between us.\n\nRegards,\nMarcus Oyelaran\nIT Infrastructure Lead\nRedcliff Midstream Partners\nm.oyelaran@redcliffmidstream.example.com\n713.555.0178\n",
+  "what_client_wanted": "An engineer to migrate an older access control product to a newer one.",
+  "expected_ambiguous_terms": [
+    "Cisco Clean Access"
+  ]
+}

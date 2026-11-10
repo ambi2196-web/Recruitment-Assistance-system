@@ -6,6 +6,9 @@ import { getDb } from "@/lib/db";
 import { safeMessage } from "@/lib/requirements";
 import { requireRole } from "@/lib/session";
 import { createScreeningKit, decideSubmission, draftSubmission, FLAG_STATUSES, submitToStakeholder, type FlagResolutions } from "@/lib/submissions";
+import { notifyRecruiterOfSubmission, notifySubmissionWaiting } from "@/lib/mailbox";
+import { readResumeFile } from "@/lib/resume-files";
+import { notifyLater } from "./notify";
 import type { ActionState } from "./requirement-actions";
 
 const text = (form: FormData, name: string) => String(form.get(name) ?? "");
@@ -26,13 +29,21 @@ export async function draft(_previous: ActionState, form: FormData): Promise<Act
   const user = await requireRole("recruiter");
   let submissionId = 0;
   try {
+    // A file wins over pasted text, so a recruiter cannot submit two different resumes at once.
+    const file = form.get("resumeFile");
+    const parsed =
+      file instanceof File && file.size > 0
+        ? await readResumeFile({ name: file.name, bytes: new Uint8Array(await file.arrayBuffer()) })
+        : { text: text(form, "resumeText"), flags: [] };
+
     submissionId = await draftSubmission(
       { db: getDb(), userId: user.id },
       {
         requirementId: Number(form.get("requirementId")),
         candidateName: text(form, "candidateName"),
-        resumeText: text(form, "resumeText"),
+        resumeText: parsed.text,
         callNotes: text(form, "callNotes"),
+        fileFlags: parsed.flags,
       },
     );
   } catch (error) {
@@ -56,6 +67,7 @@ export async function submit(_previous: ActionState, form: FormData): Promise<Ac
   } catch (error) {
     return { error: safeMessage(error) };
   }
+  notifyLater((db, mail) => notifySubmissionWaiting(db, mail, submissionId));
   revalidatePath(`/recruiter/submissions/${submissionId}`);
   return { error: null };
 }
@@ -74,6 +86,8 @@ export async function decide(_previous: ActionState, form: FormData): Promise<Ac
   } catch (error) {
     return { error: safeMessage(error) };
   }
+  const what = reason ? "The stakeholder rejected it." : "The stakeholder forwarded it to the client.";
+  notifyLater((db, mail) => notifyRecruiterOfSubmission(db, mail, submissionId, what));
   revalidatePath(`/stakeholder/submissions/${submissionId}`);
   return { error: null };
 }

@@ -16,9 +16,13 @@ export default async function NewSubmission({ params }: { params: Promise<{ id: 
       <ActionForm action={draft} className="stack">
         <input type="hidden" name="requirementId" value={requirement.id} />
         <label>Candidate name <input name="candidateName" required /></label>
+        <label>
+          Resume file (PDF, DOCX or plain text, up to 3 MB)
+          <input name="resumeFile" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" />
+        </label>
         <div className="two-columns">
-          <label>Resume text <textarea name="resumeText" rows={14} required /></label>
-          <label>Call notes <textarea name="callNotes" rows={14} required /></label>
+          <label>Or paste the resume text <textarea name="resumeText" rows={12} /></label>
+          <label>Call notes <textarea name="callNotes" rows={12} required /></label>
         </div>
         <SubmitButton label="Check and draft" busyLabel="Checking and drafting. This can take up to a minute…" />
       </ActionForm>

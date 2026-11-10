@@ -12,15 +12,20 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "db:setup": "npm run db:migrate && npm run db:seed"
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "eval": "tsx scripts/eval.ts",
+    "make-sample-files": "tsx scripts/make-sample-files.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.15",
     "drizzle-orm": "^0.45.4",
+    "jszip": "^3.10.2",
+    "mammoth": "^1.13.0",
     "next": "^16.4.5",
     "pg": "^8.23.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "unpdf": "^2.1.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

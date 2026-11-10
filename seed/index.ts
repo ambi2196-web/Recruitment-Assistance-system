@@ -30,7 +30,8 @@ export async function loadSeed(db: Db): Promise<void> {
 
   const insertedUsers = await db
     .insert(users)
-    .values(registryFile.users.map((u) => ({ ...u, role: u.role as "recruiter" | "stakeholder" | "admin" })))
+    // HINDI_DEFAULT sets each new user's starting choice (D3). Users can change it later.
+    .values(registryFile.users.map((u) => ({ ...u, role: u.role as "recruiter" | "stakeholder" | "admin", hindiToggle: process.env.HINDI_DEFAULT === "on" })))
     .returning();
   const insertedClients = await db.insert(clients).values(registryFile.clients).returning();
   await db.insert(prospectTerms).values(registryFile.prospectTerms.map((term) => ({ term })));

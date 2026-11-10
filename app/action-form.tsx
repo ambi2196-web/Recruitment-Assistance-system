@@ -42,6 +42,8 @@ export function ActionForm({ action, children, className }: { action: Action; ch
       <form ref={formRef} onSubmit={submit} className={className}>
         {children}
         {state.error && <p className="notice error" role="alert">{state.error}</p>}
+        {/* Screen readers hear that work has started, since model calls can take a minute. */}
+        <span className="visually-hidden" aria-live="polite">{pending ? "Working, please wait." : ""}</span>
       </form>
     </PendingContext.Provider>
   );

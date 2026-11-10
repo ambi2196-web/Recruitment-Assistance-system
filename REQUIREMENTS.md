@@ -357,7 +357,7 @@ If the owner prefers Python, an equivalent FastAPI + HTMX build is acceptable; d
 - No agent receives tools in the prototype.
 
 ### 11.4 Environment variables
-`DATABASE_URL`, `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`, `MONTHLY_BUDGET_USD`, `APP_ENV` (demo | pilot), `DEMO_MODE`, `DEMO_ACCESS_PASSWORD` (required on a deployed demo), `AUTH_SECRET`, `EMAIL_FROM`, `EMAIL_API_KEY`, `CRON_SECRET`, `UNRESOLVED_FLAG_POLICY` (warn | block), `HINDI_DEFAULT` (on | off). `EMAIL_FROM` and `EMAIL_API_KEY` send magic-link login emails only and are not needed in demo mode. No agent can use them (G2). Provide `.env.example`; never commit `.env`.
+`DATABASE_URL`, `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`, `MONTHLY_BUDGET_USD`, `APP_ENV` (demo | pilot), `DEMO_MODE`, `DEMO_ACCESS_PASSWORD` (required on a deployed demo), `AUTH_SECRET`, `EMAIL_FROM`, `EMAIL_API_KEY`, `CRON_SECRET`, `DESK_MAILBOX`, `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN`, `APP_BASE_URL` (Phase 4 mailbox), `UNRESOLVED_FLAG_POLICY` (warn | block), `HINDI_DEFAULT` (on | off). `EMAIL_FROM` and `EMAIL_API_KEY` send magic-link login emails only and are not needed in demo mode. No agent can use them (G2). Provide `.env.example`; never commit `.env`.
 
 ---
 

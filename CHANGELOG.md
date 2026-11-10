@@ -1,5 +1,44 @@
 # Changelog
 
+## Phase 4 — Pilot readiness (10 November 2026, built on the mock AI)
+
+Started before Phases 0 to 3 had fully passed, on the owner's instruction. Phase 4 is done only when the owner signs off `docs/pilot-checklist.md`.
+
+### Added
+- **Desk mailbox, in and out**, for a Gmail demo mailbox (owner's choice):
+  - forwarded client emails become checked requirements
+  - stakeholder replies tagged `[REQ-n]` become client answers
+  - the desk sends notifications and day 3 and day 7 reminder emails
+  - Setup is in `docs/gmail-setup.md`. Until the Google credentials are added, nothing is sent.
+- **PDF and Word resume uploads.** File type comes from the content. Hidden Word text is flagged, whether it is hidden, white or too small to read.
+- **Evaluation harness** (`npm run eval`). It scores A1 and A2, writes a report, and stops a prompt version that does worse than the last run. Fictional examples are in `eval/examples/`.
+- **`HINDI_DEFAULT`** now sets each new user's starting Hindi choice. The Hindi button reports its state to screen readers.
+- **Accessibility:**
+  - colour contrast checked at 5.6:1 or better in light and dark mode
+  - visible keyboard focus and a skip link
+  - screen readers hear when work starts
+- **Pilot documents:** `docs/pilot-onboarding.md`, `docs/pilot-checklist.md` and `docs/pilot-notes.md`.
+- `npm run make-sample-files` writes fictional PDF and Word resumes to `seed/files/`.
+
+### Security decisions
+- **The desk emails only its own users.** Code refuses any other address, so it cannot reach a client or a candidate (G2).
+- **Inbound email must pass Gmail's DMARC check** and come from a desk user. Anything else is ignored with no reply, so nobody can pose as a recruiter or use the desk to send spam.
+- **Notification emails carry a redacted title and a link only.** Details stay in the desk.
+- **A failed email never undoes the decision that triggered it.**
+- **Subjects cannot add mail headers.**
+- **All `/api/` routes skip the demo password and check `CRON_SECRET` instead.**
+
+### Known to be weak
+- **The mailbox has not talked to real Gmail.** It is tested with a stand-in mailbox. The first real run needs the owner's Google credentials.
+- **The Gmail refresh token lasts 7 days** while the Google app is in Testing.
+- **The inbox is checked once a day,** a limit of Vercel's free plan. Use **Check the inbox now** in demos.
+- **Senders whose company has no DMARC record are ignored.** Gmail addresses always pass.
+- Email attachments are not read. Resumes still go in through **Add a candidate**.
+- PDF hidden text, such as white text, is not detected. Only Word files are checked for it.
+- The evaluation harness has run only on the mock, with fictional examples. The real golden set and provider are still to come.
+- Real login is not built. It needs an email sender approved by IT. Until then, the pilot cannot run, because demo mode is refused on the pilot.
+- One test run failed during start-up and could not be repeated in six later runs. Timeouts were raised, but the cause is not confirmed.
+
 ## Phase 3 — Feedback loop and metrics (5 November 2026, built on the mock AI)
 
 Started before Phases 0 to 2 had fully passed, on the owner's instruction.

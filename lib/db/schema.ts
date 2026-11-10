@@ -148,6 +148,8 @@ export const submissions = pgTable("submissions", {
   forwardedAt: timestamp("forwarded_at", { withTimezone: true }),
   outcomeAt: timestamp("outcome_at", { withTimezone: true }),
   noReplyAt: timestamp("no_reply_at", { withTimezone: true }),
+  // The reminder day (3 or 7) last emailed, so each reminder is sent once.
+  reminderEmailedDay: integer("reminder_emailed_day"),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });
@@ -163,6 +165,19 @@ export const errorFlags = pgTable("error_flags", {
   reportedBy: integer("reported_by").notNull().references(() => users.id),
   status: errorFlagStatus("status").notNull().default("open"),
   fixedCommit: text("fixed_commit"),
+  createdAt: createdAt(),
+});
+
+// One row per email the desk inbox has handled, so nothing is processed twice.
+// The body is not stored here. A requirement made from it stores its own text.
+export const inboundEmails = pgTable("inbound_emails", {
+  id: serial("id").primaryKey(),
+  messageId: text("message_id").notNull().unique(),
+  fromAddress: text("from_address").notNull(),
+  subject: text("subject").notNull(),
+  outcome: text("outcome").notNull(),
+  detail: text("detail"),
+  requirementId: integer("requirement_id").references(() => requirements.id),
   createdAt: createdAt(),
 });
 

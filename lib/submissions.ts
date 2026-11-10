@@ -9,7 +9,7 @@ import { candidates, clients, requirements, screeningKits, submissionActions, su
 import { loadRegistry, type LlmProvider } from "./llm";
 import { redact, redactCandidateText, type Registry } from "./redaction";
 import { latestBrief, WorkflowError } from "./requirements";
-import { isNearDuplicate, runDeterministicChecks, type FlagType } from "./submission-checks";
+import { isNearDuplicate, runDeterministicChecks, type DeterministicFlag, type FlagType } from "./submission-checks";
 
 // Code checks run before the model, and the application decides the order (section 11.3).
 
@@ -89,7 +89,7 @@ async function findDuplicateFlags(db: Db, maskedResume: string): Promise<Flag[]>
 
 export async function draftSubmission(
   context: Context,
-  input: { requirementId: number; candidateName: string; resumeText: string; callNotes: string },
+  input: { requirementId: number; candidateName: string; resumeText: string; callNotes: string; fileFlags?: DeterministicFlag[] },
 ): Promise<number> {
   const { db, userId, provider } = context;
   const candidateName = input.candidateName.trim();
@@ -106,7 +106,8 @@ export async function draftSubmission(
   const registry: Registry = await loadRegistry(db);
 
   // Code checks use the raw text. Masking would remove what they need to see.
-  const codeFlags = runDeterministicChecks({ resume: resumeText, callNotes, mustHaves: briefJson.must_haves }).map(
+  // File flags come first: hidden Word text can only be seen while reading the file.
+  const codeFlags = [...(input.fileFlags ?? []), ...runDeterministicChecks({ resume: resumeText, callNotes, mustHaves: briefJson.must_haves })].map(
     (flag): Flag => ({ id: "", source: "code", ...flag }),
   );
 
